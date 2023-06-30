@@ -57,18 +57,28 @@ bool TabelaHash::inserir(const string chave, const string valor)
     if(this->cheia()){
         return false;
     }
-    auto indiceBase = hash(chave);
+    auto indiceBase = hash(chave) % this->getTamanho();
 
-    for (unsigned long delta = 0; delta < this->getTamanho(); delta++) {
+    int indiceDoRemovido = -1;
+
+    for (std::size_t delta = 0; delta < this->getTamanho(); delta++) {
         if(tabela[indiceBase + delta] == nullptr){
             auto *ptrNovo = new Par<std::string, std::string>(chave, valor);
             tabela[indiceBase + delta] = ptrNovo;
             ++this->quantidade;
             return true;
+        } else if(tabela[indiceBase + delta] == REMOVIDO && indiceDoRemovido == -1){
+            indiceDoRemovido = indiceBase + delta;
         } else if(tabela[indiceBase + delta] != REMOVIDO && tabela[indiceBase + delta]->getChave() == chave){
             tabela[indiceBase + delta]->setValor(valor);
             return true;
         }
+    }
+    if(indiceDoRemovido != -1){
+        auto *ptrNovo = new Par<std::string, std::string>(chave, valor);
+        tabela[indiceDoRemovido] = ptrNovo;
+        ++this->quantidade;
+        return true;
     }
     return false;
 }
@@ -81,7 +91,7 @@ std::string TabelaHash::buscar(const string chave)
     if(this->vazia()){
         return "TABELA VAZIA";
     }
-    auto indiceBase = hash(chave);
+    auto indiceBase = hash(chave) % this->getTamanho();
 
     for (unsigned long delta = 0; delta < this->getTamanho() - indiceBase; delta++) {
         if(tabela[indiceBase + delta] != REMOVIDO && (tabela[indiceBase + delta] != nullptr && tabela[indiceBase + delta]->getChave() == chave)){
