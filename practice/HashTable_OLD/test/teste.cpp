@@ -1,10 +1,9 @@
 #include "../lib/catch2/catch_amalgamated.hpp"
 #include "../include/TabelaHash.h"
-#include <iostream>
 
 TEST_CASE("Tabela Hash - Teste do Construtor") 
 {
-    std::size_t tamanhoInicial = 23;
+    unsigned long tamanhoInicial = 23;
     
     TabelaHash tabela(tamanhoInicial);
 
@@ -17,7 +16,7 @@ TEST_CASE("Tabela Hash - Teste do Construtor")
 
 TEST_CASE("Tabela Hash - Teste de Inserir Simples") 
 {
-    std::size_t tamanhoInicial = 23;
+    unsigned long tamanhoInicial = 23;
     
     TabelaHash tabela(tamanhoInicial);
 
@@ -35,25 +34,26 @@ TEST_CASE("Tabela Hash - Teste de Inserir Simples")
 
 TEST_CASE("Tabela Hash - Teste de Inserir Vários Seguidos") 
 {
-    std::size_t tamanhoInicial = 1379;
+    unsigned long tamanhoInicial = 1379;
     
     TabelaHash tabela(tamanhoInicial);
 
-    for(std::size_t i = 0; i < tamanhoInicial; ++i)
+    std::string valor = "VALOR";
+
+    for(unsigned long i = 0; i < tamanhoInicial; ++i)
     {
         std::string chave = "CHAVE-" + std::to_string(i);
-        std::string valor = "VALOR-" + std::to_string(i);
         tabela.inserir(chave, valor);
     }
 
-    // CHECK(tabela.inserir("nova-chave", "tabela cheia") == false);
+    CHECK(tabela.inserir("nova-chave", "tabela cheia") == false);
 
     CHECK(tabela.verificarDuplicatas());
 }
 
 TEST_CASE("Tabela Hash - Teste de Inserir e Buscar Simples") 
 {
-    std::size_t tamanhoInicial = 23;
+    unsigned long tamanhoInicial = 23;
     
     TabelaHash tabela(tamanhoInicial);
 
@@ -70,7 +70,7 @@ TEST_CASE("Tabela Hash - Teste de Inserir e Buscar Simples")
 
 TEST_CASE("Tabela Hash - Teste de Inserir com Colisões (Requer Busca)") 
 {
-    std::size_t tamanhoInicial = 23;
+    unsigned long tamanhoInicial = 23;
     
     TabelaHash tabela(tamanhoInicial);
 
@@ -94,7 +94,7 @@ TEST_CASE("Tabela Hash - Teste de Inserir com Colisões (Requer Busca)")
 
 TEST_CASE("Tabela Hash - Teste de Inserir, Buscar e Remover Simples") 
 {
-    std::size_t tamanhoInicial = 23;
+    unsigned long tamanhoInicial = 23;
     
     TabelaHash tabela(tamanhoInicial);
 
@@ -127,7 +127,7 @@ TEST_CASE("Tabela Hash - Teste de Inserir, Buscar e Remover Simples")
 
 TEST_CASE("Tabela Hash - Teste de Inserir com Colisões, Remoções e Busca") 
 {
-    std::size_t tamanhoInicial = 23;
+    unsigned long tamanhoInicial = 23;
     
     TabelaHash tabela(tamanhoInicial);
 
@@ -215,81 +215,4 @@ TEST_CASE("Tabela Hash - Teste de Inserir-Atualizar com remoções no meio")
     CHECK(tabela.inserir(chave2, valor2));
 
     CHECK(tabela.verificarDuplicatas());
-}
-
-TEST_CASE("Tabela Hash - Teste de Aumentar dinamicamente a tabela") 
-{
-    std::size_t tamanhoInicial = 1779;
-    
-    TabelaHash tabela(tamanhoInicial);
-
-    auto chaveBase = "CHAVE--";
-    auto valorBase = "VALOR--";
-
-    for(std::size_t i = 0; i < 2*tamanhoInicial; i++)
-    {
-        auto chaveInserida = chaveBase + std::to_string(i);
-        auto valorInserido = valorBase + std::to_string(i);
-
-        tabela.inserir(chaveInserida, valorInserido);
-    }
-
-    // Esperado que a tabela cresça
-    CHECK( tamanhoInicial < tabela.getTamanho() );
-
-    for(std::size_t i = 0; i < tamanhoInicial; i++)
-    {
-        auto chaveInserida = chaveBase + std::to_string(i);
-        auto valorInserido = valorBase + std::to_string(i);
-
-        // É esperado encontrar todos elementos que estavam antes sejam encontrados após o aumento
-        auto valorRetornado = tabela.buscar(chaveInserida);
-        CHECK( valorInserido == valorRetornado );        
-    }
-
-    CHECK( tabela.fatorDeCarga() < CARGA_LIMITE_SUPERIOR );
-}
-
-TEST_CASE("Tabela Hash - Teste de Diminuir dinamicamente a tabela") 
-{
-    std::size_t tamanhoInicial = 1779;
-    
-    TabelaHash tabela(tamanhoInicial);
-
-    auto chaveBase = "CHAVE--";
-    auto valorBase = "VALOR--";
-
-    for(std::size_t i = 0; i < 2*tamanhoInicial; i++)
-    {
-        auto chaveInserida = chaveBase + std::to_string(i);
-        auto valorInserido = valorBase + std::to_string(i);
-
-        tabela.inserir(chaveInserida, valorInserido);
-    }
-    
-    for(std::size_t i = 0; i < tamanhoInicial; i++)
-    {
-        auto chaveInserida = chaveBase + std::to_string(i);
-        auto valorInserido = valorBase + std::to_string(i);
-
-        // É esperado encontrar todos elementos que estavam antes sejam encontrados após o aumento
-        auto valorRetornado = tabela.buscar(chaveInserida);
-        CHECK( valorInserido == valorRetornado );        
-    }
-
-    auto tamanhoAntesDasRemocoes = tabela.getTamanho();
-    
-    // Série de remoções para forçar a diminuição
-    for(std::size_t i = 0; i < 2*tamanhoInicial; i++)
-    {
-        auto chaveRemovida = chaveBase + std::to_string(i);
-
-        auto foiRemovido = tabela.remover(chaveRemovida);
-        CHECK( foiRemovido );
-    }
-
-    CHECK( tamanhoAntesDasRemocoes > tabela.getTamanho());
-    CHECK( tabela.getQuantidade() == 0);
-
-    CHECK( tabela.fatorDeCarga() < CARGA_LIMITE_SUPERIOR );
 }

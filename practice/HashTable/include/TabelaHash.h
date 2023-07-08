@@ -10,26 +10,30 @@
 #include "Par.h"
 #include <string>
 
-static const int TAMANHO_PADRAO = 17;
+static const std::size_t TAMANHO_PADRAO = 17;
+static const float CARGA_LIMITE_INFERIOR = 0.125f;
+static const float CARGA_LIMITE_SUPERIOR = 0.5f;
 
 class TabelaHash {
 private:
     Par<std::string, std::string> **tabela;
     
-    unsigned long tamanho;
+    std::size_t tamanho;
     
-    unsigned long quantidade;
+    std::size_t quantidade;
+
+    void setTamanho(std::size_t);
     
 public:    
     void iniciar();
     
-    unsigned long preHash(const std::string);
+    std::size_t preHash(const std::string);
     
-    unsigned long hash(const std::string);
+    std::size_t hash(const std::string);
     
     TabelaHash();
     
-    TabelaHash(const unsigned long tamanho);
+    TabelaHash(const std::size_t tamanho);
     
     ~TabelaHash();    
     
@@ -39,13 +43,11 @@ public:
     
     bool remover(const std::string chave);
     
-    unsigned long getTamanho();
-
-    void setTamanho(unsigned long);
+    std::size_t getTamanho();
     
-    unsigned long getQuantidade();
+    std::size_t getQuantidade();
 
-    void getQuantidade(unsigned long);
+    void getQuantidade(std::size_t);
     
     bool vazia();
     
@@ -54,6 +56,16 @@ public:
     bool verificarDuplicatas();
     
     void imprimir();
+
+    float fatorDeCarga();
+
+    void aumentar();
+
+    void diminuir();
+
+    void redimensionar(std::size_t);
+
+    void prepararArrayNovo(Par<std::string, std::string>** arrayNovo, std::size_t tamanhoNovo);
 };
 
 
