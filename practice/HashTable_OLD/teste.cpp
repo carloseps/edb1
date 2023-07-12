@@ -32,6 +32,24 @@ TEST_CASE("Tabela Hash - Teste de Inserir Simples")
     CHECK(tabela.verificarDuplicatas());
 }
 
+TEST_CASE("Tabela Hash - Teste de Inserir Vários Seguidos") 
+{
+    unsigned long tamanhoInicial = 1379;
+    
+    TabelaHash tabela(tamanhoInicial);
+
+    std::string valor = "VALOR";
+
+    for(unsigned long i = 0; i < tamanhoInicial; ++i)
+    {
+        std::string chave = "CHAVE-" + std::to_string(i);
+        tabela.inserir(chave, valor);
+    }
+
+    CHECK(tabela.inserir("nova-chave", "tabela cheia") == false);
+
+    CHECK(tabela.verificarDuplicatas());
+}
 
 TEST_CASE("Tabela Hash - Teste de Inserir e Buscar Simples") 
 {
@@ -187,7 +205,6 @@ TEST_CASE("Tabela Hash - Teste de Inserir-Atualizar com remoções no meio")
     tabela.inserir(chave3, valor3);
     tabela.inserir(chave4, valor4);
     tabela.inserir(chave5, valor5);
-
     tabela.remover(chave1);
     tabela.remover(chave2);    
     
@@ -195,6 +212,7 @@ TEST_CASE("Tabela Hash - Teste de Inserir-Atualizar com remoções no meio")
 
     CHECK(tabela.inserir(chave5, novoValor));
     CHECK(tabela.buscar(chave5) == novoValor);
+    CHECK(tabela.inserir(chave2, valor2));
 
     CHECK(tabela.verificarDuplicatas());
 }
